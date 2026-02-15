@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-TILANG | Sistem Tilang Elektronik Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Liquid Glass Effect */
+        .liquid-glass {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px 0 rgba(0, 0, 0, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .liquid-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            transition: left 0.7s ease;
+            pointer-events: none;
+        }
+
+        .liquid-glass:hover::before {
+            left: 100%;
+        }
+
+        .liquid-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 20px 40px 0 rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Background */
+        .bg-gradient-blue {
+            background: linear-gradient(135deg, #0c4a6e 0%, #1e40af 50%, #0f172a 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -2;
+        }
+
+        /* Animated Blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: blobFloat 20s infinite ease-in-out;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: #3b82f6;
+            top: -200px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #06b6d4;
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: #60a5fa;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(-30px, -20px) scale(1.05); }
+        }
+
+        /* Smooth Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+
+        /* Process Cards */
+        .process-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .process-card:hover {
+            background: rgba(30, 41, 59, 0.7);
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .process-number {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Violation Cards */
+        .violation-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .violation-card:hover {
+            transform: translateY(-3px);
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .violation-card.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .point-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Input Fields */
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        /* Receipt Paper */
+        .receipt {
+            background: white;
+            color: #1e293b;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .receipt::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(45deg, transparent 33.333%, white 33.333%, white 66.667%, transparent 66.667%),
+                        linear-gradient(-45deg, transparent 33.333%, white 33.333%, white 66.667%, transparent 66.667%);
+            background-size: 20px 40px;
+            background-position: 0 -20px;
+        }
+
+        .receipt::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(45deg, transparent 33.333%, white 33.333%, white 66.667%, transparent 66.667%),
+                        linear-gradient(-45deg, transparent 33.333%, white 33.333%, white 66.667%, transparent 66.667%);
+            background-size: 20px 40px;
+            background-position: 0 0;
+            transform: rotate(180deg);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        /* Loading */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Checkmark */
+        .checkmark {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #10b981;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #10b981;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+
+        @keyframes fill {
+            100% { box-shadow: inset 0px 0px 0px 30px #10b981; }
+        }
+
+        /* Stats */
+        .stat-number {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Print Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-area, #print-area * {
+                visibility: visible;
+            }
+            #print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .receipt {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 40;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Checkbox */
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .custom-checkbox:checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Background -->
+    <div class="bg-gradient-blue"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 liquid-glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fas fa-shield-alt text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">E-TILANG</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Beranda</a>
+                    <a href="#process" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Proses</a>
+                    <a href="#violations" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Pelanggaran</a>
+                    <a href="#check" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Cek Status</a>
+                    <a href="#contact" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Kontak</a>
+                </div>
+
+                <button onclick="toggleMobileMenu()" class="md:hidden text-white p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 right-0 w-64 liquid-glass z-50 md:hidden pt-20 px-6">
+        <button onclick="toggleMobileMenu()" class="absolute top-4 right-4 text-white">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        <div class="flex flex-col space-y-4">
+            <a href="#home" onclick="toggleMobileMenu()" class="text-lg font-medium text-gray-300 hover:text-white">Beranda</a>
+            <a href="#process" onclick="toggleMobileMenu()" class="text-lg font-medium text-gray-300 hover:text-white">Proses</a>
+            <a href="#violations" onclick="toggleMobileMenu()" class="text-lg font-medium text-gray-300 hover:text-white">Pelanggaran</a>
+            <a href="#check" onclick="toggleMobileMenu()" class="text-lg font-medium text-gray-300 hover:text-white">Cek Status</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="text-lg font-medium text-gray-300 hover:text-white">Kontak</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
+        <div class="max-w-7xl mx-auto w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                        Sistem Tilang <br>
+                        <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Elektronik</span> <br>
+                        Indonesia
+                    </h1>
+                    <p class="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed">
+                        Proses pelanggaran lalu lintas dengan teknologi terkini. Cepat, transparan, dan efisien untuk keselamatan bersama.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="scrollToSection('check')" class="btn-primary px-8 py-4 rounded-full font-semibold text-white flex items-center justify-center gap-2 group">
+                            Cek Status Tilang
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        <button onclick="scrollToSection('process')" class="btn-secondary px-8 py-4 rounded-full font-semibold text-white">
+                            Pelajari Proses
+                        </button>
+                    </div>
+                    <div class="mt-8 flex items-center gap-6 text-sm text-gray-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-green-400"></i>
+                            <span>Aman & Terpercaya</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-file-alt text-blue-400"></i>
+                            <span>Resmi Pemerintah</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check-circle text-yellow-400"></i>
+                            <span>Cepat & Mudah</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:block fade-in stagger-2">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl blur-3xl opacity-20"></div>
+                        <div class="liquid-glass rounded-3xl p-8 relative">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                                        <i class="fas fa-camera text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-400">CCTV Active</p>
+                                        <p class="font-semibold">Live Monitoring</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse delay-75"></div>
+                                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse delay-150"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="glass-input rounded-xl p-4 flex items-center gap-3">
+                                    <i class="fas fa-car text-blue-400"></i>
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-400">Plat Nomor Terdeteksi</p>
+                                        <p class="font-mono text-lg">B 1234 ABC</p>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-semibold">Pelanggaran</span>
+                                </div>
+                                <div class="glass-input rounded-xl p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-400">Kecepatan</span>
+                                        <span class="text-red-400 font-bold">87 km/jam</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 h-2 rounded-full" style="width: 87%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Proses E-Tilang</h2>
+                <p class="text-gray-400">4 langkah mudah dalam penanganan pelanggaran lalu lintas elektronik</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="process-card rounded-2xl p-6 relative fade-in stagger-1">
+                    <div class="process-number absolute -top-4 -right-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm">01</div>
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center mb-4 shadow-lg shadow-red-500/30">
+                        <i class="fas fa-camera text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Pelanggaran Terekam</h3>
+                    <p class="text-sm text-gray-400">Kamera CCTV merekam pelanggaran lalu lintas secara otomatis</p>
+                </div>
+
+                <div class="process-card rounded-2xl p-6 relative fade-in stagger-2">
+                    <div class="process-number absolute -top-4 -right-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm">02</div>
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center mb-4 shadow-lg shadow-orange-500/30">
+                        <i class="fas fa-car text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Identifikasi Kendaraan</h3>
+                    <p class="text-sm text-gray-400">Sistem membaca plat nomor kendaraan yang melanggar</p>
+                </div>
+
+                <div class="process-card rounded-2xl p-6 relative fade-in stagger-3">
+                    <div class="process-number absolute -top-4 -right-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">03</div>
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
+                        <i class="fas fa-clipboard-check text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Verifikasi Data</h3>
+                    <p class="text-sm text-gray-400">Petugas memverifikasi data pemilik kendaraan</p>
+                </div>
+
+                <div class="process-card rounded-2xl p-6 relative fade-in stagger-4">
+                    <div class="process-number absolute -top-4 -right-4 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">04</div>
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-4 shadow-lg shadow-green-500/30">
+                        <i class="fas fa-paper-plane text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Kirim Surat Tilang</h3>
+                    <p class="text-sm text-gray-400">Surat tilang elektronik dikirim ke pelanggar</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Violations Section -->
+    <section id="violations" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Jenis Pelanggaran</h2>
+                <p class="text-gray-400">Kenali berbagai jenis pelanggaran lalu lintas dan besaran dendanya</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="violations-list">
+                <!-- Generated by JS -->
+            </div>
+
+            <div class="mt-8 liquid-glass rounded-2xl p-6 fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-info-circle text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Informasi Penting</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            Akumulasi poin pelanggaran dapat berakibat pada penundaan atau pencabutan SIM. Pembayaran denda harus dilakukan dalam waktu 14 hari kerja sejak surat tilang diterbitkan. Keterlambatan pembayaran akan dikenakan denda tambahan sebesar 50% dari total denda.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="liquid-glass rounded-3xl p-8 sm:p-12 fade-in">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <p class="text-3xl sm:text-4xl font-bold stat-number mb-2" data-target="50000">0</p>
+                        <p class="text-sm text-gray-400">Total Pelanggaran Terdata</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl sm:text-4xl font-bold stat-number mb-2" data-target="15000">0</p>
+                        <p class="text-sm text-gray-400">Pelanggaran Diproses</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl sm:text-4xl font-bold stat-number mb-2" data-target="5000000">0</p>
+                        <p class="text-sm text-gray-400">Denda Terkumpul</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl sm:text-4xl font-bold stat-number mb-2">98%</p>
+                        <p class="text-sm text-gray-400">Tingkat Kepatuhan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Check Status Section -->
+    <section id="check" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Cek Status Tilang</h2>
+                <p class="text-gray-400">Masukkan nomor plat kendaraan atau unggah foto dari CCTV untuk memeriksa status tilang</p>
+            </div>
+
+            <div class="liquid-glass rounded-3xl p-6 sm:p-8 fade-in">
+                <!-- Step 1: Input -->
+                <div id="step-1" class="page-section active">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Nomor Plat Kendaraan</label>
+                            <div class="flex gap-3">
+                                <input type="text" id="plat-input" placeholder="CONTOH: B 1234 ABC" 
+                                    class="glass-input w-full px-6 py-4 rounded-xl text-lg uppercase tracking-wider font-semibold">
+                                <button onclick="checkPlat()" class="btn-primary px-6 rounded-xl">
+                                    <i class="fas fa-search text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-700"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-slate-900 text-gray-500">atau</span>
+                            </div>
+                        </div>
+
+                        <div class="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center hover:border-blue-500/50 transition-colors cursor-pointer" onclick="document.getElementById('file-upload').click()">
+                            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleFileUpload(this)">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                <i class="fas fa-camera text-blue-400 text-2xl"></i>
+                            </div>
+                            <h4 class="font-semibold mb-2">Unggah Foto CCTV</h4>
+                            <p class="text-sm text-gray-400 mb-4">Seret foto ke sini atau pilih dari perangkat Anda</p>
+                            <div class="flex justify-center gap-3">
+                                <button class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                                    <i class="fas fa-upload mr-2"></i>Pilih File
+                                </button>
+                                <button class="btn-secondary px-4 py-2 rounded-lg text-sm">
+                                    <i class="fas fa-camera mr-2"></i>Buka Kamera
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3 text-sm text-gray-400 bg-blue-500/10 rounded-lg p-4">
+                            <i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+                            <p>Sistem akan secara otomatis membaca plat nomor dari foto CCTV menggunakan teknologi AI. Pastikan foto terlihat jelas dan plat nomor dapat dibaca.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Loading -->
+                <div id="step-2" class="page-section text-center py-12">
+                    <div class="loader mx-auto mb-4"></div>
+                    <p class="text-gray-400">Mencari data kendaraan di database...</p>
+                </div>
+
+                <!-- Step 3: Data Pelanggar -->
+                <div id="step-3" class="page-section">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold">Data Pemilik Kendaraan</h3>
+                        <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <i class="fas fa-user-check text-green-400 text-xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="glass-input rounded-xl p-4">
+                            <p class="text-xs text-gray-400 mb-1">Nama Lengkap</p>
+                            <p class="font-semibold text-lg" id="data-nama">Budi Santoso</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="glass-input rounded-xl p-4">
+                                <p class="text-xs text-gray-400 mb-1">NIK</p>
+                                <p class="font-mono" id="data-nik">3175091234567890</p>
+                            </div>
+                            <div class="glass-input rounded-xl p-4">
+                                <p class="text-xs text-gray-400 mb-1">Nomor Telepon</p>
+                                <p class="font-mono" id="data-telepon">081234567890</p>
+                            </div>
+                        </div>
+                        <div class="glass-input rounded-xl p-4">
+                            <p class="text-xs text-gray-400 mb-1">Alamat Lengkap</p>
+                            <p class="text-sm" id="data-alamat">Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="glass-input rounded-xl p-4">
+                                <p class="text-xs text-gray-400 mb-1">Jenis Kendaraan</p>
+                                <p class="font-semibold" id="data-jenis">Honda Vario 150</p>
+                            </div>
+                            <div class="glass-input rounded-xl p-4 border-blue-500/30 bg-blue-500/10">
+                                <p class="text-xs text-blue-400 mb-1">Nomor Plat</p>
+                                <p class="font-mono font-bold text-xl text-blue-400" id="data-plat">B 1234 ABC</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="resetCheck()" class="btn-secondary flex-1 py-3 rounded-xl font-semibold">
+                            Kembali
+                        </button>
+                        <button onclick="goToViolations()" class="btn-primary flex-1 py-3 rounded-xl font-semibold">
+                            Pilih Pelanggaran
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Select Violations -->
+                <div id="step-4" class="page-section">
+                    <h3 class="text-xl font-bold mb-4">Pilih Pelanggaran</h3>
+                    <p class="text-sm text-gray-400 mb-6">Pilih satu atau lebih pelanggaran yang terjadi</p>
+                    
+                    <div class="space-y-3 mb-6 max-h-96 overflow-y-auto pr-2" id="select-violations-list">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <div class="liquid-glass rounded-xl p-4 mb-6 border border-blue-500/30">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-400">Total Pelanggaran</p>
+                                <p class="text-xl font-bold" id="total-count">0 Pelanggaran</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-400">Total Denda</p>
+                                <p class="text-2xl font-bold text-blue-400" id="total-amount">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="backToData()" class="btn-secondary flex-1 py-3 rounded-xl font-semibold">
+                            Kembali
+                        </button>
+                        <button onclick="generateLetter()" id="btn-generate" class="btn-primary flex-1 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Generate Surat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Letter Generated -->
+                <div id="step-5" class="page-section">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Surat Tilang Generated!</h3>
+                        <p class="text-sm text-gray-400">Surat elektronik telah berhasil dibuat</p>
+                    </div>
+
+                    <div class="flex flex-col gap-3 mb-6">
+                        <button onclick="sendWhatsApp()" class="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-all flex items-center justify-center gap-2">
+                            <i class="fab fa-whatsapp text-xl"></i>
+                            Kirim via WhatsApp
+                        </button>
+                        <button onclick="printLetter()" class="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-print"></i>
+                            Cetak Surat
+                        </button>
+                        <button onclick="sendEmail()" class="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-envelope"></i>
+                            Kirim ke Email
+                        </button>
+                    </div>
+
+                    <div class="liquid-glass rounded-xl p-4 mb-6">
+                        <h4 class="font-semibold mb-3 text-sm">Informasi Pembayaran</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Bank BCA</span>
+                                <span class="font-mono">1234 5678 9012 3456</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Bank Mandiri</span>
+                                <span class="font-mono">0987 6543 2109 8765</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Atas Nama</span>
+                                <span>Dinas Perhubungan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="resetAll()" class="w-full btn-secondary py-3 rounded-xl font-semibold">
+                        <i class="fas fa-redo mr-2"></i>Proses Pelanggar Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Print Area (Hidden) -->
+    <div id="print-area" class="hidden">
+        <div class="receipt max-w-md mx-auto p-8">
+            <div class="text-center border-b-2 border-dashed border-gray-300 pb-6 mb-6">
+                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center text-white text-3xl">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">SURAT TILANG ELEKTRONIK</h2>
+                <p class="text-sm text-gray-500 mt-1">No: <span id="print-number">ST-2024-0001</span></p>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-600">Tanggal</span>
+                    <span class="font-semibold text-slate-800" id="print-date">-</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-600">Nama</span>
+                    <span class="font-semibold text-slate-800" id="print-nama">-</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-600">NIK</span>
+                    <span class="font-semibold text-slate-800" id="print-nik">-</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-100 pb-2">
+                    <span class="text-gray-600">Plat Nomor</span>
+                    <span class="font-bold text-blue-600 text-lg" id="print-plat">-</span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <p class="text-gray-600 text-sm mb-3 font-semibold">Pelanggaran:</p>
+                <ul class="space-y-2 text-sm" id="print-violations">
+                    <!-- Generated by JS -->
+                </ul>
+            </div>
+
+            <div class="mt-6 pt-4 border-t-2 border-dashed border-gray-300">
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-800 font-bold text-lg">TOTAL DENDA</span>
+                    <span class="text-2xl font-bold text-blue-600" id="print-total">Rp 0</span>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-gray-200 text-center text-xs text-gray-500 space-y-1">
+                <p>Silakan lakukan pembayaran ke rekening yang tertera</p>
+                <p>BCA: 1234 5678 9012 3456 (Dinas Perhubungan)</p>
+                <p>Mandiri: 0987 6543 2109 8765 (Dinas Perhubungan)</p>
+                <p class="pt-2">Hubungi call center: 1500-567</p>
+                <p class="text-[10px] text-gray-400 mt-4">© 2024 E-Tilang Indonesia. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Hubungi Kami</h2>
+                <p class="text-gray-400">Punya pertanyaan tentang e-tilang? Tim kami siap membantu</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4 fade-in">
+                    <div class="liquid-glass rounded-2xl p-6 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-red-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-1">Alamat</h4>
+                            <p class="text-sm text-gray-400">Jl. Sudirman No. 1, Jakarta Pusat</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass rounded-2xl p-6 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-phone text-green-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-1">Telepon</h4>
+                            <p class="text-sm text-gray-400">(021) 1234-5678</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass rounded-2xl p-6 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-envelope text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-1">Email</h4>
+                            <p class="text-sm text-gray-400">info@e-tilang.go.id</p>
+                        </div>
+                    </div>
+
+                    <div class="liquid-glass rounded-2xl p-6 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-clock text-yellow-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold mb-1">Jam Operasional</h4>
+                            <p class="text-sm text-gray-400">Senin - Jumat, 08.00 - 16.00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="liquid-glass rounded-2xl p-6 sm:p-8 fade-in stagger-2">
+                    <h3 class="text-xl font-bold mb-6">Kirim Pesan</h3>
+                    <form onsubmit="event.preventDefault(); sendMessage();" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Nama Lengkap</label>
+                            <input type="text" class="glass-input w-full px-4 py-3 rounded-xl" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
+                            <input type="email" class="glass-input w-full px-4 py-3 rounded-xl" placeholder="Masukkan email" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Nomor Telepon</label>
+                            <input type="tel" class="glass-input w-full px-4 py-3 rounded-xl" placeholder="Masukkan nomor telepon">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Pesan</label>
+                            <textarea class="glass-input w-full px-4 py-3 rounded-xl h-32 resize-none" placeholder="Tulis pesan Anda di sini..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2">
+                            <i class="fas fa-paper-plane"></i>
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold">E-TILANG</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4 max-w-sm">
+                        Sistem tilang elektronik untuk Indonesia yang lebih baik. Cepat, transparan, dan efisien.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-400 hover:text-white transition-all">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-500 hover:text-white transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Tautan Cepat</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#home" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#process" class="hover:text-white transition-colors">Proses</a></li>
+                        <li><a href="#violations" class="hover:text-white transition-colors">Pelanggaran</a></li>
+                        <li><a href="#contact" class="hover:text-white transition-colors">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-4">Kontak</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>Jl. Sudirman No. 1</li>
+                        <li>Jakarta Pusat, 10110</li>
+                        <li>Telp: (021) 1234-5678</li>
+                        <li>Email: info@e-tilang.go.id</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-gray-500">© 2024 E-Tilang. All rights reserved.</p>
+                <div class="flex gap-6 text-sm text-gray-500">
+                    <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                    <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Button -->
+    <div class="fab no-print" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="liquid-glass rounded-3xl p-8 max-w-sm w-full text-center transform scale-95 opacity-0 transition-all duration-300" id="modal-content">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                <i class="fas fa-check text-green-400 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Berhasil!</h3>
+            <p class="text-gray-400 mb-6" id="modal-message">Operasi berhasil dilakukan.</p>
+            <button onclick="closeModal()" class="btn-primary w-full py-3 rounded-xl font-semibold">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // Data Pelanggaran
+        const violationsData = [
+            { id: 1, name: "Melebihi Batas Kecepatan", desc: "Mengemudi melebihi batas kecepatan yang ditentukan", fine: 500000, points: 3, icon: "fa-tachometer-alt", color: "red" },
+            { id: 2, name: "Menerobos Lampu Merah", desc: "Tidak berhenti pada lampu lalu lintas merah", fine: 500000, points: 3, icon: "fa-traffic-light", color: "orange" },
+            { id: 3, name: "Parkir Liar", desc: "Parkir di tempat yang dilarang atau tidak sesuai ketentuan", fine: 250000, points: 2, icon: "fa-parking", color: "yellow" },
+            { id: 4, name: "Tidak Menggunakan Helm", desc: "Pengendara sepeda motor tidak mengenakan helm", fine: 250000, points: 2, icon: "fa-hard-hat", color: "blue" },
+            { id: 5, name: "Melanggar Marka Jalan", desc: "Melewati garis marka jalan yang tidak diperbolehkan", fine: 500000, points: 3, icon: "fa-road", color: "purple" },
+            { id: 6, name: "Menggunakan HP Saat Berkendara", desc: "Menggunakan telepon genggam saat mengemudi", fine: 500000, points: 3, icon: "fa-mobile-alt", color: "green" }
+        ];
+
+        let selectedViolations = [];
+        let currentPlat = '';
+        let currentData = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderViolations();
+            renderSelectViolations();
+            initScrollAnimations();
+            animateCounters();
+            
+            // Set current date
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            document.getElementById('print-date').textContent = dateStr;
+        });
+
+        // Render Violations List (Display only)
+        function renderViolations() {
+            const container = document.getElementById('violations-list');
+            container.innerHTML = violationsData.map(v => `
+                <div class="violation-card rounded-2xl p-5 fade-in">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-${v.color}-500/20 flex items-center justify-center">
+                            <i class="fas ${v.icon} text-${v.color}-400 text-xl"></i>
+                        </div>
+                        <div class="point-badge w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            ${v.points}
+                        </div>
+                    </div>
+                    <h4 class="font-semibold text-lg mb-1">${v.name}</h4>
+                    <p class="text-sm text-gray-400 mb-3">${v.desc}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-500">Poin</span>
+                        <span class="text-green-400 font-bold">Rp ${v.fine.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render Selectable Violations
+        function renderSelectViolations() {
+            const container = document.getElementById('select-violations-list');
+            container.innerHTML = violationsData.map(v => `
+                <div class="violation-card rounded-xl p-4 flex items-center gap-4 ${selectedViolations.includes(v.id) ? 'selected' : ''}" 
+                     onclick="toggleViolation(${v.id})">
+                    <div class="w-10 h-10 rounded-lg bg-${v.color}-500/20 flex items-center justify-center flex-shrink-0">
+                        <i class="fas ${v.icon} text-${v.color}-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-sm">${v.name}</h4>
+                        <p class="text-xs text-gray-400">Rp ${v.fine.toLocaleString('id-ID')} • ${v.points} poin</p>
+                    </div>
+                    <input type="checkbox" class="custom-checkbox" ${selectedViolations.includes(v.id) ? 'checked' : ''} 
+                           onclick="event.stopPropagation()">
+                </div>
+            `).join('');
+        }
+
+        // Toggle Violation Selection
+        function toggleViolation(id) {
+            if (selectedViolations.includes(id)) {
+                selectedViolations = selectedViolations.filter(v => v !== id);
+            } else {
+                selectedViolations.push(id);
+            }
+            renderSelectViolations();
+            updateTotal();
+        }
+
+        // Update Total
+        function updateTotal() {
+            const totalFine = selectedViolations.reduce((sum, id) => {
+                const v = violationsData.find(v => v.id === id);
+                return sum + (v ? v.fine : 0);
+            }, 0);
+
+            document.getElementById('total-count').textContent = `${selectedViolations.length} Pelanggaran`;
+            document.getElementById('total-amount').textContent = `Rp ${totalFine.toLocaleString('id-ID')}`;
+            document.getElementById('btn-generate').disabled = selectedViolations.length === 0;
+        }
+
+        // Check Plat Nomor
+        function checkPlat() {
+            const input = document.getElementById('plat-input').value.trim();
+            if (!input) {
+                showModal('Silakan masukkan nomor plat kendaraan!');
+                return;
+            }
+
+            currentPlat = input.toUpperCase();
+            currentData = {
+                nama: 'Budi Santoso',
+                nik: '3175091234567890',
+                telepon: '081234567890',
+                alamat: 'Jl. Sudirman No. 123, Jakarta Selatan, DKI Jakarta 12190',
+                jenis: 'Honda Vario 150',
+                plat: currentPlat
+            };
+
+            // Update data display
+            document.getElementById('data-nama').textContent = currentData.nama;
+            document.getElementById('data-nik').textContent = currentData.nik;
+            document.getElementById('data-telepon').textContent = currentData.telepon;
+            document.getElementById('data-alamat').textContent = currentData.alamat;
+            document.getElementById('data-jenis').textContent = currentData.jenis;
+            document.getElementById('data-plat').textContent = currentData.plat;
+
+            showStep(2);
+            setTimeout(() => {
+                showStep(3);
+            }, 1500);
+        }
+
+        // Handle File Upload
+        function handleFileUpload(input) {
+            if (input.files && input.files[0]) {
+                // Simulate processing
+                showStep(2);
+                setTimeout(() => {
+                    currentPlat = 'B 5678 XYZ';
+                    document.getElementById('plat-input').value = currentPlat;
+                    checkPlat();
+                }, 2000);
+            }
+        }
+
+        // Navigation Steps
+        function showStep(step) {
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+        }
+
+        function resetCheck() {
+            document.getElementById('plat-input').value = '';
+            showStep(1);
+        }
+
+        function backToData() {
+            showStep(3);
+        }
+
+        function goToViolations() {
+            showStep(4);
+        }
+
+        // Generate Letter
+        function generateLetter() {
+            // Update print area
+            document.getElementById('print-number').textContent = `ST-2024-${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}`;
+            document.getElementById('print-nama').textContent = currentData.nama;
+            document.getElementById('print-nik').textContent = currentData.nik;
+            document.getElementById('print-plat').textContent = currentData.plat;
+
+            const violationsList = document.getElementById('print-violations');
+            const totalFine = selectedViolations.reduce((sum, id) => {
+                const v = violationsData.find(v => v.id === id);
+                return sum + (v ? v.fine : 0);
+            }, 0);
+
+            violationsList.innerHTML = selectedViolations.map(id => {
+                const v = violationsData.find(v => v.id === id);
+                return `
+                    <li class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-slate-700">${v.name}</span>
+                        <span class="font-semibold text-slate-800">Rp ${v.fine.toLocaleString('id-ID')}</span>
+                    </li>
+                `;
+            }).join('');
+
+            document.getElementById('print-total').textContent = `Rp ${totalFine.toLocaleString('id-ID')}`;
+            
+            showStep(5);
+        }
+
+        // Print Letter - FIXED
+        function printLetter() {
+            // Show print area temporarily
+            const printArea = document.getElementById('print-area');
+            printArea.classList.remove('hidden');
+            
+            // Force browser to render
+            printArea.style.display = 'block';
+            
+            // Print
+            window.print();
+            
+            // Hide again after print
+            setTimeout(() => {
+                printArea.classList.add('hidden');
+                printArea.style.display = '';
+            }, 100);
+        }
+
+        // Send WhatsApp
+        function sendWhatsApp() {
+            const phone = currentData.telepon.replace(/\D/g, '');
+            const totalFine = selectedViolations.reduce((sum, id) => {
+                const v = violationsData.find(v => v.id === id);
+                return sum + (v ? v.fine : 0);
+            }, 0);
+
+            let message = `*SURAT TILANG ELEKTRONIK - E-TILANG*\n\n`;
+            message += `Yth. ${currentData.nama},\n\n`;
+            message += `Kendaraan dengan plat nomor *${currentPlat}* telah tertangkap kamera CCTV melakukan pelanggaran lalu lintas:\n\n`;
+            
+            selectedViolations.forEach((id, idx) => {
+                const v = violationsData.find(v => v.id === id);
+                message += `${idx + 1}. ${v.name}\n   Denda: Rp ${v.fine.toLocaleString('id-ID')}\n`;
+            });
+
+            message += `\n*Total Denda: Rp ${totalFine.toLocaleString('id-ID')}*\n\n`;
+            message += `Silakan lakukan pembayaran ke:\n`;
+            message += `BCA: 1234 5678 9012 3456\n`;
+            message += `Mandiri: 0987 6543 2109 8765\n`;
+            message += `Atas Nama: Dinas Perhubungan\n\n`;
+            message += `Pembayaran paling lambat 14 hari kerja.\n`;
+            message += `Info: 1500-567\n\n`;
+            message += `Terima kasih atas kerjasamanya.\n`;
+            message += `_E-Tilang Indonesia_`;
+
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+            showModal('Surat tilang telah dikirim via WhatsApp!');
+        }
+
+        // Send Email
+        function sendEmail() {
+            showModal('Surat tilang akan dikirim ke email terdaftar dalam beberapa menit.');
+        }
+
+        // Reset All
+        function resetAll() {
+            selectedViolations = [];
+            currentPlat = '';
+            currentData = {};
+            document.getElementById('plat-input').value = '';
+            renderSelectViolations();
+            updateTotal();
+            showStep(1);
+        }
+
+        // Send Message (Contact Form)
+        function sendMessage() {
+            showModal('Pesan Anda telah terkirim. Tim kami akan segera menghubungi Anda.');
+            document.querySelector('form').reset();
+        }
+
+        // Modal Functions
+        function showModal(message) {
+            document.getElementById('modal-message').textContent = message;
+            const modal = document.getElementById('success-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('success-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        }
+
+        // Scroll Functions
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scroll Animations
+        function initScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Animate Counters
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number[data-target]');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.for
